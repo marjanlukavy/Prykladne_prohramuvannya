@@ -1,0 +1,267 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: studen api
+  description: An API that alows users to obtain existing information pf students or post info about new student
+tags:
+- name: "students"
+  description: "Students"
+- name: "Admin"
+  description: "Admin"
+
+paths:
+  /students:
+    get:
+      tags:
+      - "students"
+      summary: Obtain Information about students from the database
+      description: Obtain Information about students from the database
+      parameters:
+        - name: bodyLimit
+          in: query
+          description: Student rating
+          schema:
+            type: integer
+            minimum: 80
+            maximum: 100
+            example: 88
+      responses:
+        200:
+          description: Successful pull student info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 4
+
+                    firstname:
+                      type: string
+                      example: Ryan
+
+                    lastname:
+                      type: string
+                      example: Pinkham
+
+                    Student rating:
+                      type: integer
+                      example: 88
+        '400':
+          description: Invalid status value
+
+
+  /admin/addstudent:
+    post:
+      tags:
+      - "Admin"
+      summary: Add a new user to the database
+      description: Create a new student in the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                  id:
+                    type: integer
+                    example: 2
+
+                  firstname:
+                    type: string
+                    example: Ryan
+
+                  lastname:
+                    type: string
+                    example: Pinkham
+
+                  Student rating:
+                    type: integer
+                    example: 88
+      responses:
+        200:
+          description: Successful created a new student
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    id:
+                      type: integer
+                      example: 4
+
+                    firstname:
+                      type: string
+                      example: Ryan
+
+                    lastname:
+                      type: string
+                      example: Pinkham
+
+                    Student rating:
+                      type: integer
+                      example: 88
+        '405':
+          description: Invalid input
+      security:
+      - student_security:
+        - read
+        - write
+
+  /students/{id}:
+    get:
+      tags:
+      - "students"
+      summary: Obtain infromation about specific student
+      description: Obtain infromation about specific student
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: The ID of the student
+          schema:
+            type: integer
+            example: 54
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 54
+
+                  firstname:
+                    type: string
+                    example: Ryan
+
+                  lastname:
+                    type: string
+                    example: Pinkham
+
+                  Student rating:
+                    type: integer
+                    example: 88
+        '404':
+          description: Student not found
+    put:
+      tags:
+        - Admin
+      summary: Updates a student in the database
+      parameters:
+        - name: id
+          in: path
+          description: ID of student that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+
+                  firstname:
+                    type: string
+                    description: Updated firstname of the student
+
+                  lastname:
+                    type: string
+                    description: Updated lastname of the student
+
+                  Student rating:
+                    type: integer
+                    description: Updated rank of the student
+        '404':
+          description: Student not found
+      security:
+      - student_security:
+        - read
+        - write
+    delete:
+      tags:
+        - Admin
+      summary: Deletes a student
+      parameters:
+        - name: id
+          in: path
+          description: Student id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Success
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Student not found
+      security:
+      - student_security:
+        - read
+        - write
+
+components:
+  securitySchemes:
+    student_security:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://example.com/oauth/authorize
+          tokenUrl: https://example.com/oauth/token
+          scopes:
+            read: Grants read access
+            write: Grants write access
+            admin: Grants access to admin operations
+
+  schemas:
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 0
+        firstname:
+          type: string
+          example: Ryan
+        lastname:
+          type: string
+          example: Pinkham
+        Student rating:
+          type: integer
+          example: 88
+          minimum: 80
+          maximum: 100
+        rights:
+          type: string
+          example: false
+    Admin:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 0
+        firstname:
+          type: string
+          example: John
+        lastname:
+          type: string
+          example: Nhoj
+        rights:
+          type: string
+          example: true
